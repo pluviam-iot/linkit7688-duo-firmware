@@ -10,6 +10,7 @@ BME280 bme280;
 volatile unsigned int rain = 0;
 volatile unsigned long lastInterruptTimeRain = 0;
 volatile unsigned long interruptTimeRain = 0;
+unsigned int windPulses = 0;
       
       void setup() { 
         pinMode(PIN_WIND_SPEED, INPUT);
@@ -38,6 +39,11 @@ volatile unsigned long interruptTimeRain = 0;
                         Serial1.print(getWindDirection());  
                   } else if (commandByte == 'G') {
                         Serial1.print(getWindInterval());
+                  } else if (commandByte == 'H') {
+                        countWindPulses();
+                  } else if (commandByte == 'I') {
+                        Serial1.print(windPulses);
+                        windPulses = 0;
                   } else if (commandByte == 'K') {
                         Serial1.print(getBattery());
                   } else if (commandByte == '+') {
@@ -54,7 +60,7 @@ volatile unsigned long interruptTimeRain = 0;
 {
     interruptTimeRain = millis();
   // If interrupts come faster than 100ms, assume it's a bounce and ignore
-  if (interruptTimeRain - lastInterruptTimeRain > 100)
+  if (interruptTimeRain - lastInterruptTimeRain > 1000)
   {
     rain++;  
 
@@ -107,6 +113,7 @@ int getWindInterval () {
   return result;
 }
 
+
 int getWindDirection (){
   return analogRead(PIN_WIND_DIRECTION);
 }
@@ -115,4 +122,23 @@ int getBattery (){
   return analogRead(PIN_BATTERY);
 }
 
+
+void countWindPulses() {
+    windPulses = 0;
+    unsigned long start = millis();  
+    bool timeout = false;
+    bool pinStatus = LOW;
+    bool lastStatus = LOW;
+  
+    while (!timeout) {
+      pinStatus = digitalRead(PIN_WIND_SPEED);
+      if (lastStatus == HIGH && pinStatus == LOW) {
+        windPulses ++;
+      }
+      lastStatus = pinStatus;
+      if (millis() - start > 15000) {      
+        timeout = true;
+      } 
+    }
+}
 
