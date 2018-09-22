@@ -1,7 +1,7 @@
-//#include "Seeed_BME280.h"
-//#include <Wire.h>
+#include "Seeed_BME280.h"
+#include <Wire.h>
 
-//BME280 bme280;
+BME280 bme280;
 
 #define PIN_WIND_SPEED 9
 #define PIN_WIND_DIRECTION 3
@@ -26,10 +26,10 @@ void setup() {
   
   pinMode(PIN_WIND_SPEED, INPUT);
 
-  /*if(!bme280.init()){
+  if(!bme280.init()){
     Serial1.println("Device error!");
     Serial.println("Device error!");
-  }*/
+  }
 
   //wait a little to stabilize all sensors
   delay(2000);
@@ -44,14 +44,14 @@ void loop() {
 
   // respond just when receive 'A' command over Serial1 (internal serial to linkit)
   if (commandByte == 'A') {
-    //Serial1.print(bme280.getTemperature());
-    Serial1.print(20.2);
+    Serial1.print(bme280.getTemperature());
+    //Serial1.print(20.2);
     Serial1.print(';');
-    //Serial1.print(bme280.getHumidity());
-    Serial1.print(85);
+    Serial1.print(bme280.getHumidity());
+    //Serial1.print(85);
     Serial1.print(';');
-    //Serial1.print(bme280.getPressure());
-    Serial1.print(1013.25);
+    Serial1.print(bme280.getPressure());
+    //Serial1.print(1013.25);
     Serial1.print(';');
     Serial1.print(getRain());
     Serial1.print(';');
@@ -60,7 +60,7 @@ void loop() {
     Serial1.print(windPulses);
     Serial1.print(';');
     Serial1.print(getBattery());
-    Serial1.print('\n');
+    Serial1.print('/');
 
     /* after response was send, start measuring wind speed for next interaction.
      * First response after boot up wind speed is always 0
