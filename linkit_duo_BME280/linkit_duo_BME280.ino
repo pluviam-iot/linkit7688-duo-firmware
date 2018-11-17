@@ -60,7 +60,7 @@ void loop() {
     Serial1.print(windPulses);
     Serial1.print(';');
     Serial1.print(getBattery());
-    Serial1.print('/');
+    Serial1.println("");
 
     /* after response was send, start measuring wind speed for next interaction.
      * First response after boot up wind speed is always 0
